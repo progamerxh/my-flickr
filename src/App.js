@@ -9,21 +9,15 @@ class App extends Component {
   state = {
     isLoading: true,
     photos: [],
-    geometry: 0,
+    geometry: 1,
     error: null
   }
 
   getJustifiedLayout(tempphoto, tempratio) {
     var config = {
-      containerWidth: 1060,
-      containerPadding: {
-        top: 50,
-        right: 0,
-        left: 100,
-        bottom: 50
-      },
+      containerWidth: 1002,
       boxSpacing: 5,
-      targetRowHeight: 220,
+      targetRowHeight: 250,
       targetRowHeightTolerance: 0.25,
       maxNumRows: Number.POSITIVE_INFINITY,
       forceAspectRatio: false,
@@ -33,7 +27,6 @@ class App extends Component {
     var geometry = justifiedLayout(tempratio.slice(0, 50), config)
     this.setState({
       photos: tempphoto,
-      height: geometry.containerHeight,
       geometry: geometry,
       isLoading: false
     });
@@ -43,21 +36,21 @@ class App extends Component {
     var jsondata
     var context = this
     axios
-      .get("https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2967edc0cbc11415bdd32aa62f19f688&format=rest")
+      .get("https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2967edc0cbc11415bdd32aa62f19f688&extras=owner_name,count_faves,count_comments&format=rest")
       .then(response => {
         xml2js.parseString(response.data, { mergeAttrs: true, explicitArray: false }, (err, result) => {
           jsondata = result.rsp.photos.photo
         });
-        var tempratio = [];
         var tempphoto = []
+        var tempratio = []
         var count = 0;
         jsondata.map(photo => {
-          const { farm, server, secret, id } = photo;
+          const { farm, server, secret, id, title, ownername, count_faves, count_comments } = photo;
           var imgsrc = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}.jpg`;
-          tempphoto.push(imgsrc);
           var img = new Image();
           img.onload = function () {
             tempratio.push(Number((this.width / this.height).toFixed(1)));
+            tempphoto.push({ src: imgsrc, farm: farm, server: server, id: id, title: title, owner: ownername, faves: count_faves, comments: count_comments });
             if (++count === jsondata.length) {
               context.getJustifiedLayout(tempphoto, tempratio)
             }
@@ -77,60 +70,62 @@ class App extends Component {
   render() {
     const { isLoading, geometry, photos } = this.state;
     var photoliststyle = { height: geometry.containerHeight }
-
     return (
+      console.log(photos),
       <div className="fluid-centered" >
+        <div className="tittle-row">
+          <h3>Explore</h3>
+          <div className="tools">
+            <button className="justified"></button>
+            <button className="story"></button>
+          </div>
+        </div>
         <div className="photo-list-view" style={photoliststyle}>
           {!isLoading ? (
             geometry.boxes.map((box, index) => {
-              var style = { width: box.width, height: box.height, top: box.top, left: box.left, backgroundImage: 'url(' + photos[index] + ')', }
+              var style = {
+                width: box.width,
+                height: box.height,
+                backgroundImage: 'url(' + photos[index].src + ')',
+                transform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+                WebkitTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+                MsTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+              }
               return (
-                <div key={index} className="box" style={style}>
-                </div>)
+                <div key={index} className="hvrbox hvrbox_background box" style={style}>
+                  <div className="hvrbox-layer_top">
+                    <div className="hvrbox-text">
+                      <div className="title">{photos[index].title}</div>
+                      <div className="attr">by {photos[index].owner}</div>
+
+                    </div>
+                    <div className="engagement">
+                      <span className="engagement-item fave" role="button" aria-label="Add to Favorites">
+                        <span className="engagement-icon">
+                          <svg className="engagement-icon">
+                            <use xlinkHref="#icon-fave_hollow"></use>
+                          </svg>
+                        </span>
+                      </span>
+                      <span className="engagement-count">{photos[index].faves}</span>
+                      <a className="engagement-item comment" arial-label="comments">
+                        <span className="engagement-icon">
+                          <svg className="engagement-icon">
+                            <use xlinkHref="#icon-comment_hollow"></use>
+                          </svg>
+                        </span>
+                        <span className="engagement-count">{photos[index].comments}</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )
             })
           ) : (<h3>Loading...</h3>
             )}
         </div>
       </div>
     );
-
-    {/* <div role="main" class="main fluid-centered">
-          <div className="tittle-row"></div>
-          <div className="view photo-list-view">
-            <div className="view photo-list-photo-view awake">
-              <div className="interaction-view">
-                <div className="photo-list-photo-interacion">
-                  <a className="overlay" role="heading" arial-level="3" aria-label="Blah blah blah" data-rapid_p="443"></a>
-                  <div className="extra-tool"></div>
-                  <div className="interaction-bar" title="Blah blah blah">
-                    <div className="text">
-                      <a className="tittle">Blah blah blah</a>
-                      <a className="attribution">by blah</a>
-                    </div>
-                    <div className="engagement">
-                      <span className="engagement-item fave" role="button" aria-label="Add to Favorites">
-                        <span className="engagement-icon">
-                          <svg className="icon icon-fave_hollow">
-                            <use xlinkHref="#icon-fave_hollow"></use>
-                          </svg>
-                        </span>
-                      </span>
-                      <span className="engagement-count">999</span>
-                      <a className="engagement-item comment" arial-label="comments">
-                        <span className="engagement-icon">
-                          <svg className="icon icon-comment_hollow">
-                            <use xlinkHref="#icon-comment_hollow"></use>
-                          </svg>
-                        </span>
-                        <span className="engagement-count">40</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
   }
 }
 

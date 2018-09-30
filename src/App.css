@@ -1,16 +1,55 @@
 body{
   color: #212124;
   background-color: #f3f5f6;
+  font-family: Proxima Nova,helvetica neue,helvetica,arial,sans-serif;
 }
-
+.fluid-centered  h3 {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 300;
+  margin: 1em 0;
+}
 .fluid-centered {
   min-width: 800px;
-    max-width: 80%;
+  max-width: 80%;
     margin-left: auto;
     margin-right: auto;
     padding-left: 130px;
     padding-right: 130px;
-  width: 1060px;
+}
+.tittle-row
+{
+  position: relative;
+}
+.tools {
+  position: absolute;
+min-width: 0;
+border-radius: 0;
+}
+.justified {
+  background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) -438px -448px no-repeat;
+  background-size: 552px 521px;
+  width: 18px;
+height: 16px;
+right: 20px;
+position: absolute;
+display: block;
+-webkit-appearance: button;
+-moz-appearance: button;
+appearance: button;
+}
+.story {
+  background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) -427px -488px no-repeat;
+  background-size: 552px 521px;
+  width: 16px;
+  height: 16px; 
+position: absolute;
+display: block;
+-webkit-appearance: button;
+
+-moz-appearance: button;
+
+appearance: button;
 }
 .box {
   position: absolute;
@@ -18,4 +57,103 @@ body{
     background-position: 50%;
     background-color: #fff;
     background-size: cover;
+}
+
+.hvrbox,
+.hvrbox * {
+	box-sizing: border-box;
+}
+.hvrbox {
+	display: inline-block;
+	overflow: hidden;
+	max-width: 100%;
+	height: auto;
+}
+
+.hvrbox .hvrbox-layer_top {
+	opacity: 0;
+	position: absolute;
+	width: 100%;
+  height: 100%;
+  display: flex;
+	-moz-transition: all 0.4s ease-in-out 0s;
+	-webkit-transition: all 0.4s ease-in-out 0s;
+	-ms-transition: all 0.4s ease-in-out 0s;
+	transition: all 0.4s ease-in-out 0s;
+}
+.hvrbox:hover .hvrbox-layer_top,
+.hvrbox.active .hvrbox-layer_top {
+	opacity: 1;
+}
+.hvrbox-text {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+	text-align: left;
+  font-style: bold;
+	display: block;
+	position: absolute;
+  bottom: 1em;
+  padding: 0 8px 20px;
+  width: 100%;
+  height: 1em;
+}
+
+ .title{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
+  bottom: 1em;
+}
+.attr{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  bottom: 0em;
+  color: hsla(0,0%,100%,.7);
+  font-size: 12px;
+  text-shadow: 0 0 2px #000;
+}
+.engagement{
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+	text-align: left;
+  font-style: bold;
+	display: block;
+	position: absolute;
+  bottom: 0;
+  padding: 0 8px 20px;
+  width: 100%;
+  height: 1em;
+}
+.engagement-item .engagement-icon{
+  height: 1em;
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 0 2px #000;
+}
+.engagement-count{
+  color: #fff;
+  font-size: 14px;
+  float: right;
+}
+.fave{
+  fill: currentColor;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
+}
+.comment{
+  fill: currentColor;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
 }
