@@ -3,6 +3,7 @@ import axios from 'axios';
 import justifiedLayout from 'justified-layout';
 import logo from './logo.svg';
 import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScrollComponent from 'react-infinite-scroll-component'
 import './App.css';
 
 class App extends Component {
@@ -12,6 +13,7 @@ class App extends Component {
       items: [],
       photos: [],
       nextPage: 1,
+      containerHeight: 0,
       geometry: null,
       hasMore: true,
     };
@@ -25,11 +27,15 @@ class App extends Component {
       targetRowHeightTolerance: 0.25,
       maxNumRows: Number.POSITIVE_INFINITY,
       forceAspectRatio: false,
-      showWidows: true,
+      showWidows: false,
       fullWidthBreakoutRowCadence: false
     }
     var nextpage = context.state.nextPage;
     var geometry = justifiedLayout(tempratio, config)
+    var containerHeight = context.state.containerHeight;
+    console.log(containerHeight)
+    if (nextpage > 1)
+      containerHeight = containerHeight + Number(geometry.containerHeight);
     var hasMore;
     nextpage++;
     nextpage > 4 ? (hasMore = false) : (hasMore = true);
@@ -41,11 +47,13 @@ class App extends Component {
       geometry: geometry,
       nextPage: nextpage++,
       hasMore,
-      isLoading: false,
+      containerHeight
     });
   }
 
-  loadItems() {
+
+
+  fetchMoreData() {
     var context = this;
     var url = `https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2967edc0cbc11415bdd32aa62f19f688&extras=owner_name,count_faves,count_comments&format=json&nojsoncallback=1&page=${context.state.nextPage}`;
     axios
@@ -53,7 +61,7 @@ class App extends Component {
       .then(response => {
         var jsondata = response.data.photos.photo;
         var tempphoto = []
-        var tempratio = [];
+        var tempratio = []
         var count = 0;
         jsondata.map(photo => {
           const { farm, server, secret, id, title, ownername, count_faves, count_comments } = photo;
@@ -63,10 +71,10 @@ class App extends Component {
             tempratio.push(Number((this.width / this.height).toFixed(1)));
             tempphoto.push({ src: imgsrc, farm: farm, server: server, id: id, title: title, owner: ownername, faves: count_faves, comments: count_comments });
             if (++count === jsondata.length) {
-              context.getJustifiedLayout(tempphoto, tempratio, context)
+              context.getJustifiedLayout(tempphoto, tempratio, context);
             }
           }
-          img.src = imgsrc;
+          img.src = imgsrc
         })
       })
       .catch(error => this.setState({ error, hasMore: false, isLoading: false }));
@@ -74,7 +82,7 @@ class App extends Component {
 
 
   render() {
-    const { geometry, photos, hasMore, items } = this.state;
+    const { geometry, photos, hasMore, items, containerHeight } = this.state;
     const loader = <div className="loader">Loading ...</div>;
     var lastindex
     var key
@@ -82,17 +90,18 @@ class App extends Component {
       lastindex = items.length + 1;
       geometry.boxes.map((box, index) => {
         key = Number(index) + lastindex;
-        console.log(key)
+        let keystring = key.toString();
+        let top = Number(box.top) + containerHeight;
         var style = {
           width: box.width,
           height: box.height,
           backgroundImage: 'url(' + photos[index].src + ')',
-          transform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
-          WebkitTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
-          MsTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+          transform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
+          WebkitTransform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
+          MsTransform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
         }
         items.push(
-          <div key={key.toString()} className="hvrbox hvrbox_background box" style={style}>
+          <div key={keystring} className="hvrbox hvrbox_background box" style={style}>
             <div className="hvrbox-layer_top">
               <div className="hvrbox-text">
                 <div className="title">{photos[index].title}</div>
@@ -115,12 +124,11 @@ class App extends Component {
     }
 
     return (
-      console.log(items),
       <InfiniteScroll
         pageStart={0}
-        loadMore={this.loadItems()}
+        loadMore={this.fetchMoreData()}
         hasMore={hasMore}
-        loader={loader}>
+        loader={<div className="loader" key={0}>Loading ...</div>}>
 
         <div className="fluid-centered" >
           <div className="tittle-row">
@@ -134,9 +142,7 @@ class App extends Component {
             {items}
           </div>
         </div>
-
       </InfiniteScroll>
-
     );
   }
 }
