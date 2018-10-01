@@ -8,14 +8,15 @@ body{
   line-height: 30px;
   font-weight: 300;
   margin: 1em 0;
+  margin-bottom: 10px;
 }
 .fluid-centered {
   min-width: 800px;
   max-width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 130px;
-    padding-right: 130px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 130px;
+  padding-right: 130px;
 }
 .tittle-row
 {
@@ -23,33 +24,47 @@ body{
 }
 .tools {
   position: absolute;
-min-width: 0;
-border-radius: 0;
+  right: 0;
+  top: 10px;
 }
+.tools button{
+  line-height: 32px;
+  margin: 0;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  font-family: Proxima Nova,helvetica neue,helvetica,arial,sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
 .justified {
   background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) -438px -448px no-repeat;
   background-size: 552px 521px;
   width: 18px;
-height: 16px;
-right: 20px;
-position: absolute;
-display: block;
--webkit-appearance: button;
--moz-appearance: button;
-appearance: button;
+  height: 16px;
+  right: 35px;
+  position: absolute;
+  display: block;
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
 }
 .story {
   background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) -427px -488px no-repeat;
   background-size: 552px 521px;
   width: 16px;
   height: 16px; 
-position: absolute;
-display: block;
--webkit-appearance: button;
-
--moz-appearance: button;
-
-appearance: button;
+  right: 0px;
+  position: absolute;
+  display: block;
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
 }
 .box {
   position: absolute;
@@ -71,15 +86,34 @@ appearance: button;
 }
 
 .hvrbox .hvrbox-layer_top {
+  cursor: pointer;
 	opacity: 0;
-	position: absolute;
-	width: 100%;
-  height: 100%;
-  display: flex;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 40%;
+  padding: 0 8px 8px;
+  z-index: 2;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5));
 	-moz-transition: all 0.4s ease-in-out 0s;
 	-webkit-transition: all 0.4s ease-in-out 0s;
 	-ms-transition: all 0.4s ease-in-out 0s;
-	transition: all 0.4s ease-in-out 0s;
+  transition: all 0.4s ease-in-out 0s;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-align: end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
 }
 .hvrbox:hover .hvrbox-layer_top,
 .hvrbox.active .hvrbox-layer_top {
@@ -90,51 +124,50 @@ appearance: button;
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
-	text-align: left;
-  font-style: bold;
-	display: block;
-	position: absolute;
-  bottom: 1em;
-  padding: 0 8px 20px;
-  width: 100%;
-  height: 1em;
+  min-width: 0;
+  min-height: 0;
+  margin-right: 12px;
 }
 
  .title{
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
   font-size: 14px;
   color: #fff;
+  font-weight: 600;
+  min-height: 17px;
+  display: block;
+  margin: 2px 0 0;
   text-shadow: 0 0 2px #000;
-  bottom: 1em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
+  z-index: 2;
+
 }
 .attr{
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  bottom: 0em;
   color: hsla(0,0%,100%,.7);
-  font-size: 12px;
+  font-size: 11px;
+  -webkit-transition: color .15s linear;
+  transition: color .15s linear;
+  display: block;
+  margin: 2px 0 0;
   text-shadow: 0 0 2px #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
+  z-index: 2;
+  text-decoration: none;
 }
 .engagement{
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-	text-align: left;
-  font-style: bold;
-	display: block;
-	position: absolute;
-  bottom: 0;
-  padding: 0 8px 20px;
-  width: 100%;
-  height: 1em;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
 }
-.engagement-item .engagement-icon{
+.engagement-item {
   height: 1em;
-  position: absolute;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -156,4 +189,16 @@ appearance: button;
   font-size: 14px;
   color: #fff;
   text-shadow: 0 0 2px #000;
+}
+.icon{
+  margin-left: 1em;
+  position: relative;
+  display: inline;
+  float: right;
+  width: 16px;
+  height: 16px;
+}
+
+.loader{
+  clear: both;
 }

@@ -8,6 +8,7 @@
     "justified-layout": "^2.1.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-infinite-scroller": "^1.2.1",
     "react-scripts": "1.1.5",
     "xml2js": "^0.4.19"
   },
