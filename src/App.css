@@ -13,19 +13,14 @@ body{
 .fluid-centered {
   min-width: 800px;
   max-width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 130px;
-  padding-right: 130px;
+  margin-left: 10%;
+  margin-right: 10%;
 }
-.tittle-row
-{
-  position: relative;
-}
+
 .tools {
   position: absolute;
-  right: 0;
-  top: 10px;
+  right: 10%;
+  top: 2em;
 }
 .tools button{
   line-height: 32px;
@@ -43,7 +38,7 @@ body{
 }
 
 .justified {
-  background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) -438px -448px no-repeat;
+  background: url(https://s.yimg.com/ap/build/images/sprites/icons-9441054a.png) no-repeat;
   background-size: 552px 521px;
   width: 18px;
   height: 16px;

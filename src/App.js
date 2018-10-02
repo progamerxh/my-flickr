@@ -7,10 +7,13 @@ import InfiniteScroll from 'react-infinite-scroller';
 import InfiniteScrollComponent from 'react-infinite-scroll-component'
 import './App.css';
 
+const loadstyle = { justified: 0.4, story: 0.6 }
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loadstyle: loadstyle.justified,
       items: [],
       photos: [],
       nextPage: 1,
@@ -22,8 +25,10 @@ class App extends Component {
 
   getJustifiedLayout(tempphoto, tempratio, context) {
     var config = {
-      containerWidth: 1002,
+      containerWidth: window.innerWidth * 0.8,
       containerPadding: 0,
+      targetRowHeight: window.innerHeight * context.state.loadstyle,
+      targetRowHeightTolerance: 0.25,
       boxSpacing: 5,
       targetRowHeightTolerance: 0.25,
       maxNumRows: Number.POSITIVE_INFINITY,
@@ -31,6 +36,7 @@ class App extends Component {
       showWidows: false,
       fullWidthBreakoutRowCadence: false
     }
+    console.log(config)
     var nextpage = context.state.nextPage;
     var containerHeight = context.state.containerHeight;
     var geometry = context.state.geometry;
@@ -91,6 +97,34 @@ class App extends Component {
       .catch(error => this.setState({ error, hasMore: false, isLoading: false }));
   }
 
+  setJustified() {
+
+    this.setState({
+      loadstyle: loadstyle.justified,
+      items: [],
+      photos: [],
+      nextPage: 1,
+      containerHeight: 0,
+      geometry: null,
+      hasMore: true,
+    });
+  }
+
+  setStory() {
+    this.setState({
+      loadstyle: loadstyle.story,
+      items: [],
+      photos: [],
+      nextPage: 1,
+      containerHeight: 0,
+      geometry: null,
+      hasMore: true,
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.setJustified.bind(this));
+  }
   render() {
     const { geometry, photos, hasMore, items, containerHeight } = this.state;
     const loader = <div className="fluid-centered" key={0}><h3>Loading...</h3></div>;
@@ -141,21 +175,25 @@ class App extends Component {
         hasMore={hasMore}
         threshold={50}
         loader={loader}
-        >
+      >
         <div className="fluid-centered" id="maincontent" >
           <div className="tittle-row">
             <h3>Explore</h3>
             <div className="tools">
-              <button className="justified"></button>
-              <button className="story"></button>
+              <button className="justified" onClick={this.setJustified.bind(this)}
+                style={{ backgroundPosition: (this.state.loadstyle === loadstyle.justified) ? `-438px -448px` : `-476px -448px` }}
+              ></button>
+              <button className="story" onClick={this.setStory.bind(this)}
+                style={{ backgroundPosition: (this.state.loadstyle === loadstyle.story) ? `-393px -488px` : `-427px -488px` }}
+              ></button>
             </div>
           </div>
           <div className="photo-list-view" style={styleheight}>
             {items}
           </div>
         </div>
-      </InfiniteScroll>
-      
+      </InfiniteScroll >
+
     );
   }
 }
