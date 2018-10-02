@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import ReactDOM from 'react-dom';
 import justifiedLayout from 'justified-layout';
 import logo from './logo.svg';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -31,14 +32,21 @@ class App extends Component {
       fullWidthBreakoutRowCadence: false
     }
     var nextpage = context.state.nextPage;
-    var geometry = justifiedLayout(tempratio, config)
     var containerHeight = context.state.containerHeight;
-    console.log(containerHeight)
-    if (nextpage > 1)
-      containerHeight = containerHeight + Number(geometry.containerHeight);
+    var geometry = context.state.geometry;
+    if (geometry) {
+      containerHeight = config.boxSpacing + Number(geometry.containerHeight);
+    }
+    config.containerPadding = {
+      top: containerHeight,
+      right: 0,
+      bottom: 0,
+      left: 0
+    }
+    geometry = justifiedLayout(tempratio, config)
     var hasMore;
     nextpage++;
-    nextpage > 4 ? (hasMore = false) : (hasMore = true);
+    nextpage > 10 ? (hasMore = false) : (hasMore = true);
     if (!hasMore) {
       return;
     }
@@ -47,19 +55,22 @@ class App extends Component {
       geometry: geometry,
       nextPage: nextpage++,
       hasMore,
-      containerHeight
+      containerHeight,
     });
   }
 
 
 
-  fetchMoreData() {
+  loadItems() {
     var context = this;
-    var url = `https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2967edc0cbc11415bdd32aa62f19f688&extras=owner_name,count_faves,count_comments&format=json&nojsoncallback=1&page=${context.state.nextPage}`;
+    var photosperload = 20;
+    var url = `https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2967edc0cbc11415bdd32aa62f19f688&extras=owner_name,count_faves,count_comments&format=json&nojsoncallback=1&per_page=${photosperload}&page=${context.state.nextPage}`;
     axios
       .get(url)
       .then(response => {
         var jsondata = response.data.photos.photo;
+        if (context.state.nextpage > jsondata.pages)
+          return;
         var tempphoto = []
         var tempratio = []
         var count = 0;
@@ -80,25 +91,26 @@ class App extends Component {
       .catch(error => this.setState({ error, hasMore: false, isLoading: false }));
   }
 
-
   render() {
     const { geometry, photos, hasMore, items, containerHeight } = this.state;
-    const loader = <div className="loader">Loading ...</div>;
+    const loader = <div className="fluid-centered" key={0}><h3>Loading...</h3></div>;
+    var styleheight = { height: containerHeight };
     var lastindex
     var key
     if (geometry) {
+      console.log("Rerender")
+      styleheight = { height: containerHeight };
       lastindex = items.length + 1;
       geometry.boxes.map((box, index) => {
         key = Number(index) + lastindex;
         let keystring = key.toString();
-        let top = Number(box.top) + containerHeight;
         var style = {
           width: box.width,
           height: box.height,
           backgroundImage: 'url(' + photos[index].src + ')',
-          transform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
-          WebkitTransform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
-          MsTransform: 'translate(' + box.left + 'px' + ',' + top.toString() + 'px' + ')',
+          transform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+          WebkitTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
+          MsTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
         }
         items.push(
           <div key={keystring} className="hvrbox hvrbox_background box" style={style}>
@@ -122,15 +134,15 @@ class App extends Component {
         );
       });
     }
-
     return (
       <InfiniteScroll
         pageStart={0}
-        loadMore={this.fetchMoreData()}
+        loadMore={this.loadItems.bind(this)}
         hasMore={hasMore}
-        loader={<div className="loader" key={0}>Loading ...</div>}>
-
-        <div className="fluid-centered" >
+        threshold={50}
+        loader={loader}
+        >
+        <div className="fluid-centered" id="maincontent" >
           <div className="tittle-row">
             <h3>Explore</h3>
             <div className="tools">
@@ -138,13 +150,16 @@ class App extends Component {
               <button className="story"></button>
             </div>
           </div>
-          <div className="photo-list-view" >
+          <div className="photo-list-view" style={styleheight}>
             {items}
           </div>
         </div>
       </InfiniteScroll>
+      
     );
   }
 }
 
-export default App;
+ReactDOM.render(
+  <App />
+  , document.getElementById('root'));
