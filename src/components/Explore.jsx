@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import ReactDOM from 'react-dom';
 import justifiedLayout from 'justified-layout';
-import logo from './logo.svg';
 import InfiniteScroll from 'react-infinite-scroller';
-import InfiniteScrollComponent from 'react-infinite-scroll-component'
-import './App.css';
+import '../App.css';
 
-const loadstyle = { justified: 0.4, story: 0.6 }
+const loadstyle = { justified: 0.15, story: 0.35 }
 
-class App extends Component {
+class Explore extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,16 +24,14 @@ class App extends Component {
     var config = {
       containerWidth: window.innerWidth * 0.8,
       containerPadding: 0,
-      targetRowHeight: window.innerHeight * context.state.loadstyle,
+      targetRowHeight: window.innerWidth * context.state.loadstyle,
       targetRowHeightTolerance: 0.25,
       boxSpacing: 5,
-      targetRowHeightTolerance: 0.25,
       maxNumRows: Number.POSITIVE_INFINITY,
       forceAspectRatio: false,
       showWidows: false,
       fullWidthBreakoutRowCadence: false
     }
-    console.log(config)
     var nextpage = context.state.nextPage;
     var containerHeight = context.state.containerHeight;
     var geometry = context.state.geometry;
@@ -121,7 +116,9 @@ class App extends Component {
       hasMore: true,
     });
   }
-
+  handleOnClick(id) {
+    this.props.history.push(`/photos/` + id)
+  }
   componentDidMount() {
     window.addEventListener("resize", this.setJustified.bind(this));
   }
@@ -132,7 +129,6 @@ class App extends Component {
     var lastindex
     var key
     if (geometry) {
-      console.log("Rerender")
       styleheight = { height: containerHeight };
       lastindex = items.length + 1;
       geometry.boxes.map((box, index) => {
@@ -147,7 +143,7 @@ class App extends Component {
           MsTransform: 'translate(' + box.left + 'px' + ',' + box.top + 'px' + ')',
         }
         items.push(
-          <div key={keystring} className="hvrbox hvrbox_background box" style={style}>
+          <div key={keystring} onClick={() => this.handleOnClick(photos[index].id)} className="hvrbox hvrbox_background box" style={style}>
             <div className="hvrbox-layer_top">
               <div className="hvrbox-text">
                 <div className="title">{photos[index].title}</div>
@@ -177,7 +173,7 @@ class App extends Component {
         loader={loader}
       >
         <div className="fluid-centered" id="maincontent" >
-          <div className="tittle-row">
+          <div className="title-row">
             <h3>Explore</h3>
             <div className="tools">
               <button className="justified" onClick={this.setJustified.bind(this)}
@@ -198,6 +194,4 @@ class App extends Component {
   }
 }
 
-ReactDOM.render(
-  <App />
-  , document.getElementById('root'));
+export default Explore;
