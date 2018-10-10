@@ -33,12 +33,13 @@ class TagSearch extends Component {
             showWidows: false,
             fullWidthBreakoutRowCadence: false
         }
-        var nextpage = context.state.nextPage;
+        var nextPage = 1;
         var containerHeight = 0;
         var items = [];
         if (isReSearch !== true && isReSearch > 2) {
             containerHeight = context.state.containerHeight;
             items = context.state.items;
+            nextPage = context.nextPage;
         }
         config.containerPadding = {
             top: containerHeight,
@@ -51,15 +52,15 @@ class TagSearch extends Component {
             containerHeight = config.boxSpacing + Number(geometry.containerHeight);
         }
         var hasMore;
-        nextpage++;
-        nextpage > 10 ? (hasMore = false) : (hasMore = true);
+        nextPage++;
+        nextPage > 10 ? (hasMore = false) : (hasMore = true);
         if (!hasMore) {
             return;
         }
         context.setState({
             photos: tempphoto,
             geometry: geometry,
-            nextPage: nextpage++,
+            nextPage,
             hasMore,
             containerHeight,
             text,
@@ -125,12 +126,12 @@ class TagSearch extends Component {
         });
     }
 
-    componentWillUpdate(prevProps) {
+    componentWillUpdate(nextProps) {
         console.log(`update`)
         console.log(`state text ` + this.state.text);
         console.log(`this prop ` + this.props.match.params.searchquery);
-        console.log(`prev prop ` + prevProps.match.params.searchquery);
-        if (this.state.text != this.props.match.params.searchquery) {
+        console.log(`prev prop ` + nextProps.match.params.searchquery);
+        if (this.state.text != nextProps.match.params.searchquery) {
             this.loadItems(true);
         }
 
@@ -138,13 +139,14 @@ class TagSearch extends Component {
     handleOnClick(id) {
         this.props.history.push(`/photos/` + id)
     }
+
     componentDidMount() {
         window.addEventListener("resize", this.setJustified.bind(this));
     }
 
     render() {
         const { geometry, photos, hasMore, items, containerHeight } = this.state;
-        const loader = <div className="fluid-centered" key={0}><h3>Loading...</h3></div>;
+        const loader = <div className="fluid-centered loader" key={0}><h3>Loading...</h3></div>;
         var styleheight = { height: containerHeight };
         var lastindex
         var key
