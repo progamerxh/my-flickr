@@ -16,18 +16,22 @@ class SearchForm extends Component {
     handleChange(event) {
         this.setState({ value: event.target.value });
     }
-    
+
     handleSubmit(event) {
         event.preventDefault();
         this.props.onSearchQuery(this.state.value);
         this.props.history.push(`/search=` + this.state.value)
     }
 
-    componentDidUpdate() {
+    componentWillUpdate() {
         var pathname = this.props.history.location.pathname;
         var token = pathname.split("=");
-        if (this.state.pathname != pathname)
-            this.setState({ value: token[1], pathname })
+        if (this.state.pathname != pathname) {
+            if (pathname.search("search") == -1)
+                this.setState({ value: '', pathname })
+            else
+                this.setState({ value: token[1], pathname })
+        }
     }
 
     render() {
