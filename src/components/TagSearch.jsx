@@ -17,10 +17,11 @@ class TagSearch extends Component {
             containerHeight: 0,
             geometry: null,
             hasMore: true,
+            text: ""
         };
     }
 
-    getJustifiedLayout(tempphoto, tempratio, context, isReSearch) {
+    getJustifiedLayout(tempphoto, tempratio, context, isReSearch, text) {
         var config = {
             containerWidth: window.innerWidth * 0.8,
             containerPadding: 0,
@@ -33,13 +34,11 @@ class TagSearch extends Component {
             fullWidthBreakoutRowCadence: false
         }
         var nextpage = context.state.nextPage;
-        var containerHeight = 0
-        if (isReSearch !== true) {
+        var containerHeight = 0;
+        var items = [];
+        if (isReSearch !== true && isReSearch > 2) {
             containerHeight = context.state.containerHeight;
-        }
-        var geometry = context.state.geometry;
-        if (geometry) {
-            containerHeight = config.boxSpacing + Number(geometry.containerHeight);
+            items = context.state.items;
         }
         config.containerPadding = {
             top: containerHeight,
@@ -47,7 +46,10 @@ class TagSearch extends Component {
             bottom: 0,
             left: 0
         }
-        geometry = justifiedLayout(tempratio, config)
+        var geometry = justifiedLayout(tempratio, config)
+        if (geometry) {
+            containerHeight = config.boxSpacing + Number(geometry.containerHeight);
+        }
         var hasMore;
         nextpage++;
         nextpage > 10 ? (hasMore = false) : (hasMore = true);
@@ -60,13 +62,17 @@ class TagSearch extends Component {
             nextPage: nextpage++,
             hasMore,
             containerHeight,
+            text,
+            items,
         });
     }
 
     loadItems(isReSearch) {
+        var pathname = this.props.history.location.pathname;
         var context = this;
         var photosperload = 20;
-        var text = this.props.match.params.searchquery
+        var text = pathname.split("=")[1];
+        console.log(`text ` + text + `, reset ` + isReSearch)
         var url = ` https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=2967edc0cbc11415bdd32aa62f19f688&extras=owner_name,count_faves,count_comments&text=${text}&tag=${text}&sort=relevance&per_page=${photosperload}&page=${context.state.nextPage}&format=json&nojsoncallback=1`;
         axios
             .get(url)
@@ -85,7 +91,7 @@ class TagSearch extends Component {
                         tempratio.push(Number((this.width / this.height).toFixed(1)));
                         tempphoto.push({ src: imgsrc, farm: farm, server: server, id: id, title: title, owner: ownername, faves: count_faves, comments: count_comments });
                         if (++count === jsondata.length) {
-                            context.getJustifiedLayout(tempphoto, tempratio, context, isReSearch);
+                            context.getJustifiedLayout(tempphoto, tempratio, context, isReSearch, text);
                         }
                     }
                     img.src = imgsrc
@@ -119,20 +125,23 @@ class TagSearch extends Component {
         });
     }
 
-    componentWillUpdate(prevProps)
-    {
-        if (this.props.match.params.searchquery != prevProps.match.params.searchquery) {
+    componentWillUpdate(prevProps) {
+        console.log(`update`)
+        console.log(`state text ` + this.state.text);
+        console.log(`this prop ` + this.props.match.params.searchquery);
+        console.log(`prev prop ` + prevProps.match.params.searchquery);
+        if (this.state.text != this.props.match.params.searchquery) {
             this.loadItems(true);
-          }
+        }
+
     }
-    handleOnClick(id)
-    {
-      this.props.history.push(`/photos/` + id)
+    handleOnClick(id) {
+        this.props.history.push(`/photos/` + id)
     }
     componentDidMount() {
         window.addEventListener("resize", this.setJustified.bind(this));
     }
-    
+
     render() {
         const { geometry, photos, hasMore, items, containerHeight } = this.state;
         const loader = <div className="fluid-centered" key={0}><h3>Loading...</h3></div>;
@@ -185,7 +194,7 @@ class TagSearch extends Component {
             >
                 <div className="fluid-centered" id="maincontent" >
                     <div className="title-row">
-                        <h3>Explore</h3>
+                        <h3>Tag > {this.props.match.params.searchquery}</h3>
                         <div className="tools">
                             <button className="justified" onClick={this.setJustified.bind(this)}
                                 style={{ backgroundPosition: (this.state.loadstyle === loadstyle.justified) ? `-438px -448px` : `-476px -448px` }}

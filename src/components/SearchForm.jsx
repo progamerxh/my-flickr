@@ -4,7 +4,10 @@ import { withRouter } from 'react-router-dom';
 class SearchForm extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: '' };
+        this.state = {
+            value: '',
+            pathname: ''
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -13,12 +16,18 @@ class SearchForm extends Component {
     handleChange(event) {
         this.setState({ value: event.target.value });
     }
-
+    
     handleSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
         this.props.onSearchQuery(this.state.value);
         this.props.history.push(`/search=` + this.state.value)
+    }
 
+    componentDidUpdate() {
+        var pathname = this.props.history.location.pathname;
+        var token = pathname.split("=");
+        if (this.state.pathname != pathname)
+            this.setState({ value: token[1], pathname })
     }
 
     render() {

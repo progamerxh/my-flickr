@@ -34,17 +34,16 @@ class Explore extends Component {
     }
     var nextpage = context.state.nextPage;
     var containerHeight = context.state.containerHeight;
-    var geometry = context.state.geometry;
-    if (geometry) {
-      containerHeight = config.boxSpacing + Number(geometry.containerHeight);
-    }
     config.containerPadding = {
       top: containerHeight,
       right: 0,
       bottom: 0,
       left: 0
     }
-    geometry = justifiedLayout(tempratio, config)
+    var geometry = justifiedLayout(tempratio, config)
+    if (geometry) {
+      containerHeight = config.boxSpacing + Number(geometry.containerHeight);
+    }
     var hasMore;
     nextpage++;
     nextpage > 10 ? (hasMore = false) : (hasMore = true);
